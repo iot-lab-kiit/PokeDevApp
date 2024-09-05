@@ -1,6 +1,5 @@
 package `in`.iotlab.pokedeviot.view.screens
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,21 +39,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import `in`.iotlab.pokedeviot.R
@@ -73,10 +68,11 @@ fun HomeScreen(navController: NavController,
         Column {
             Spacer(modifier = Modifier.height(20.dp))
             Image(
-                painter = painterResource(id = R.drawable.ic_international_pok_mon_logo),
+                painter = painterResource(id = R.drawable.poketitlenew),
                 contentDescription = "Pokemon",
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(100.dp)
                     .align(CenterHorizontally)
             )
             SearchBar(

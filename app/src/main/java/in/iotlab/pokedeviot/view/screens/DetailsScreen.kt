@@ -66,7 +66,7 @@ fun DetailsScreen(
     dominantColor: Color,
     pokemonName: String,
     navController: NavController,
-    topPadding: Dp = 20.dp,
+    topPadding: Dp = 60.dp,
     pokemonImageSize: Dp = 200.dp,
     viewModel: PokemonDetailsViewModel = hiltViewModel()) {
 
@@ -195,7 +195,7 @@ fun PokemonDetailSection(
                 ) else it.toString()
             }}",
             fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface
         )
