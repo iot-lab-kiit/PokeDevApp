@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorPalette = darkColorScheme(
-    primary = Color.Yellow,
-    background = Color(0xFF101010),
-    onBackground = Color.White,
-    surface = Color(0xFF303030),
+    primary = Color.Blue,
+    background = Color(0xFF1A3A53),
+    onBackground = Color.Black,
+    surface = Color(0xFF1B1B1B),
     onSurface = Color.White
 )
 
