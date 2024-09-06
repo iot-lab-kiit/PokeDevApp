@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -39,11 +41,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +66,7 @@ import `in`.iotlab.pokedeviot.R
 import `in`.iotlab.pokedeviot.data.model.PokedexListEntry
 import `in`.iotlab.pokedeviot.ui.theme.RobotoCondensed
 import `in`.iotlab.pokedeviot.view.components.ShimmerImage
+import `in`.iotlab.pokedeviot.view.navigation.PokeDevScreens
 import `in`.iotlab.pokedeviot.vm.PokemonListViewModel
 
 @Composable
@@ -93,7 +99,7 @@ fun HomeScreen(navController: NavController,
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
-                viewModel.searchPokemonList(it)
+                navController.navigate("details_screen/${Color(0x80E73820).toArgb()}/${it}")
             }
             Spacer(modifier = Modifier.height(16.dp))
             PokemonList(navController = navController)
@@ -107,7 +113,7 @@ fun SearchBar(
     hint: String = "",
     onSearch: (String) -> Unit = {}
 ) {
-    var text by rememberSaveable {
+    var text by remember {
         mutableStateOf("")
     }
     var isHintDisplayed by remember {
@@ -115,11 +121,21 @@ fun SearchBar(
     }
 
     Box(modifier = modifier) {
+        val keyboardController = LocalSoftwareKeyboardController.current
         BasicTextField(
             value = text,
+            cursorBrush = SolidColor(Color.Black),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onSearch(text)
+                    keyboardController?.hide() // Hide the keyboard after search
+                }
+            ),
             onValueChange = {
                 text = it
-                onSearch(it)
             },
             maxLines = 1,
             singleLine = true,

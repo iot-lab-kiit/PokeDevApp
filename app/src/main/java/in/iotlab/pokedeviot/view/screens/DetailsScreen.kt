@@ -69,7 +69,7 @@ import kotlin.math.round
 
 @Composable
 fun DetailsScreen(
-    dominantColor: Color,
+    dominantColor: Color = Color(0x80E73820),
     pokemonName: String,
     navController: NavController,
     topPadding: Dp = 80.dp,
@@ -77,6 +77,7 @@ fun DetailsScreen(
     viewModel: PokemonDetailsViewModel = hiltViewModel()) {
 
     val loadingComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pokeball_loading))
+    val noDataComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data_found_anim))
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -91,7 +92,9 @@ fun DetailsScreen(
             }
             is UiState.Loading -> {
                 Column(
-                    modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -143,7 +146,18 @@ fun DetailsScreen(
                             .offset(y = topPadding))
                 }
             }
-            else -> {}
+            else -> {
+                Column(
+                    modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    LottieAnimation(composition = noDataComposition,
+                        modifier = Modifier.size(240.dp),
+                        contentScale = ContentScale.Fit,
+                        iterations = LottieConstants.IterateForever)
+                }
+            }
         }
     }
 }
