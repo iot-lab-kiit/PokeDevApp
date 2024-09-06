@@ -40,6 +40,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -52,6 +53,10 @@ import androidx.palette.graphics.Palette
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import `in`.iotlab.pokedeviot.R
 import `in`.iotlab.pokedeviot.data.model.PokedexListEntry
 import `in`.iotlab.pokedeviot.ui.theme.RobotoCondensed
@@ -61,15 +66,22 @@ import `in`.iotlab.pokedeviot.vm.PokemonListViewModel
 @Composable
 fun HomeScreen(navController: NavController,
                viewModel: PokemonListViewModel = hiltViewModel()) {
-    Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = Modifier.fillMaxSize()
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(
+            Brush.verticalGradient(
+                listOf(
+                    MaterialTheme.colorScheme.background,
+                    Color(0x80E73820)
+                )
+            )
+        )
     ) {
         Column {
             Spacer(modifier = Modifier.height(20.dp))
             Image(
                 painter = painterResource(id = R.drawable.poketitlenew),
-                contentDescription = "Pokemon",
+                contentDescription = "PokeDev",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
@@ -79,7 +91,7 @@ fun HomeScreen(navController: NavController,
                 hint = "Search...",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 viewModel.searchPokemonList(it)
             }
@@ -124,9 +136,9 @@ fun SearchBar(
         if(isHintDisplayed) {
             Text(
                 text = hint,
-                color = Color.LightGray,
+                color = Color.Gray,
                 modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
             )
         }
     }
@@ -137,6 +149,7 @@ fun PokemonList(
     navController: NavController,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
+    val loadingComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pokeball_loading))
     val pokemonList by remember { viewModel.pokemonList }
     val endReached by remember { viewModel.endReached }
     val loadError by remember { viewModel.loadError }
@@ -164,7 +177,10 @@ fun PokemonList(
         modifier = Modifier.fillMaxSize()
     ) {
         if(isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            LottieAnimation(composition = loadingComposition,
+                modifier = Modifier.size(128.dp),
+                contentScale = ContentScale.Fit,
+                iterations = LottieConstants.IterateForever)
         }
         if(loadError.isNotEmpty()) {
             RetrySection(error = loadError) {
@@ -184,6 +200,7 @@ fun PokedexEntry(
 ) {
     val defaultDominantColor = MaterialTheme.colorScheme.surface
     var dominantColor by remember { mutableStateOf(Color.Gray) }
+    var vibrantColor by remember { mutableStateOf(Color.Gray) }
     val context = LocalContext.current
 
     LaunchedEffect(entry.imageUrl) {
@@ -199,6 +216,9 @@ fun PokedexEntry(
             palette?.dominantSwatch?.rgb?.let { colorValue ->
                 dominantColor = Color(colorValue)
             }
+            palette?.vibrantSwatch?.rgb?.let { colorValue ->
+                vibrantColor = Color(colorValue)
+            }
         }
     }
 
@@ -212,7 +232,7 @@ fun PokedexEntry(
                 Brush.verticalGradient(
                     listOf(
                         dominantColor,
-                        defaultDominantColor
+                        vibrantColor
                     )
                 )
             )
@@ -232,6 +252,7 @@ fun PokedexEntry(
                 text = entry.pokemonName,
                 fontFamily = RobotoCondensed,
                 fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

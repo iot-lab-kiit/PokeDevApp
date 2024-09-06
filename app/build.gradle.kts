@@ -102,4 +102,8 @@ dependencies {
 
     //Palette
     implementation("androidx.palette:palette:1.0.0")
+
+    //Lottie
+    val lottieVersion = "6.4.0"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 }

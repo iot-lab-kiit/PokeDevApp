@@ -3,6 +3,7 @@ package `in`.iotlab.pokedeviot.view.screens
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import `in`.iotlab.pokedeviot.R
 import `in`.iotlab.pokedeviot.data.model.Pokemon
 import `in`.iotlab.pokedeviot.data.model.Type
@@ -56,6 +61,7 @@ import `in`.iotlab.pokedeviot.data.utils.UiState
 import `in`.iotlab.pokedeviot.data.utils.parseStatToAbbr
 import `in`.iotlab.pokedeviot.data.utils.parseStatToColor
 import `in`.iotlab.pokedeviot.data.utils.parseTypeToColor
+import `in`.iotlab.pokedeviot.ui.theme.Roboto
 import `in`.iotlab.pokedeviot.view.components.ShimmerImage
 import `in`.iotlab.pokedeviot.vm.PokemonDetailsViewModel
 import java.util.Locale
@@ -66,9 +72,11 @@ fun DetailsScreen(
     dominantColor: Color,
     pokemonName: String,
     navController: NavController,
-    topPadding: Dp = 60.dp,
-    pokemonImageSize: Dp = 200.dp,
+    topPadding: Dp = 80.dp,
+    pokemonImageSize: Dp = 220.dp,
     viewModel: PokemonDetailsViewModel = hiltViewModel()) {
+
+    val loadingComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pokeball_loading))
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -82,7 +90,16 @@ fun DetailsScreen(
                 viewModel.pokemonDetails(pokemonName)
             }
             is UiState.Loading -> {
-                CircularProgressIndicator()
+                Column(
+                    modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    LottieAnimation(composition = loadingComposition,
+                        modifier = Modifier.size(128.dp),
+                        contentScale = ContentScale.Fit,
+                        iterations = LottieConstants.IterateForever)
+                }
             }
             is UiState.Success -> {
                 PokemonDetailTopSection(
@@ -103,7 +120,7 @@ fun DetailsScreen(
                             bottom = 16.dp
                         )
                         .shadow(10.dp, RoundedCornerShape(10.dp))
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(16.dp)
                         .align(Alignment.BottomCenter),
@@ -142,7 +159,7 @@ fun PokemonDetailTopSection(
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color.Black,
+                        MaterialTheme.colorScheme.background,
                         Color.Transparent
                     )
                 )
@@ -196,6 +213,7 @@ fun PokemonDetailSection(
             }}",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
+            fontFamily = Roboto,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -204,6 +222,8 @@ fun PokemonDetailSection(
             pokemonWeight = pokemonInfo.weight,
             pokemonHeight = pokemonInfo.height
         )
+        Spacer(modifier = Modifier
+            .height(32.dp))
         PokemonBaseStats(pokemonInfo = pokemonInfo)
     }
 }
@@ -222,13 +242,20 @@ fun PokemonTypeSection(types: List<Type>) {
                     .weight(1f)
                     .padding(horizontal = 8.dp)
                     .clip(CircleShape)
-                    .background(parseTypeToColor(type))
+                    .border(1.dp, parseTypeToColor(type), CircleShape)
+                    .background(Color.Transparent)
                     .height(35.dp)
             ) {
                 Text(
-                    text = type.type.name.capitalize(Locale.ROOT),
-                    color = Color.White,
-                    fontSize = 18.sp
+                    text = type.type.name.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.ROOT
+                        ) else it.toString()
+                    },
+                    color = parseTypeToColor(type),
+                    fontSize = 18.sp,
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Normal
                 )
             }
         }
@@ -257,9 +284,6 @@ fun PokemonDetailDataSection(
             dataIcon = painterResource(id = R.drawable.ic_weight),
             modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier
-            .size(1.dp, sectionHeight)
-            .background(Color.LightGray))
         PokemonDetailDataItem(
             dataValue = pokemonHeightInMeters,
             dataUnit = "m",
@@ -285,7 +309,9 @@ fun PokemonDetailDataItem(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "$dataValue$dataUnit",
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            fontFamily = Roboto,
+            fontWeight = FontWeight.Light
         )
     }
 }
@@ -340,11 +366,13 @@ fun PokemonStat(
         ) {
             Text(
                 text = statName,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium,
+                fontFamily = Roboto
             )
             Text(
                 text = (curPercent.value * statMaxValue).toInt().toString(),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium,
+                fontFamily = Roboto
             )
         }
     }
@@ -364,9 +392,11 @@ fun PokemonBaseStats(
         Text(
             text = "Base stats:",
             fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            fontFamily = Roboto,
+            fontWeight = FontWeight.Medium
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         for(i in pokemonInfo.stats.indices) {
             val stat = pokemonInfo.stats[i]
