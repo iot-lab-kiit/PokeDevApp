@@ -99,7 +99,7 @@ fun HomeScreen(navController: NavController,
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
-                navController.navigate("details_screen/${Color(0x80E73820).toArgb()}/${it}")
+                navController.navigate("details_screen/${Color(0x80E73820).toArgb()}/${it.trim()}")
             }
             Spacer(modifier = Modifier.height(16.dp))
             PokemonList(navController = navController)
@@ -268,7 +268,7 @@ fun PokedexEntry(
                 text = entry.pokemonName,
                 fontFamily = RobotoCondensed,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

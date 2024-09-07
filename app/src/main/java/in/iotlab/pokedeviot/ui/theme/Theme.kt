@@ -25,8 +25,8 @@ private val LightColorPalette = lightColorScheme(
     primary = Color.Blue,
     background = Color(0xFF1A3A53),
     onBackground = Color.Black,
-    surface = Color(0xFF1B1B1B),
-    onSurface = Color.White
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color.Black
 )
 
 //@Composable

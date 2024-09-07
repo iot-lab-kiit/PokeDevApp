@@ -72,8 +72,8 @@ fun DetailsScreen(
     dominantColor: Color = Color(0x80E73820),
     pokemonName: String,
     navController: NavController,
-    topPadding: Dp = 80.dp,
-    pokemonImageSize: Dp = 220.dp,
+    topPadding: Dp = 50.dp,
+    pokemonImageSize: Dp = 200.dp,
     viewModel: PokemonDetailsViewModel = hiltViewModel()) {
 
     val loadingComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pokeball_loading))
